@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Decode the response
     $result = json_decode($response, true);
 
-    if ($httpCode == 200 && isset($result['status']) && $result['status'] == 'success') {
+    if ($httpCode == 200 && isset($result['status'])) {
         // Save transaction to database
         $stmt = $conn->prepare("INSERT INTO transactions (order_id, category, name, email, phone, amount, status) VALUES (?, ?, ?, ?, ?, ?, 'PENDING')");
         $stmt->bind_param("sssssd", $order_id, $category, $name, $email, $phone, $amount);
@@ -62,12 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         mail(ADMIN_EMAIL, $subject, $message, $headers);
 
-        // Return success response to client
+        // Return initiated response to client (USSD sent successfully)
         header('Content-Type: application/json');
         echo json_encode([
-            'status' => 'success',
+            'status' => 'initiated',
             'order_id' => $order_id,
-            'message' => 'Payment initiated successfully'
+            'message' => 'USSD notification sent. Please check your phone and complete the payment.'
         ]);
         exit();
     } else {
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
         echo json_encode([
             'status' => 'error',
-            'message' => isset($result['message']) ? $result['message'] : 'Payment failed. Please try again.'
+            'message' => isset($result['message']) ? $result['message'] : 'Failed to initiate payment. Please check your details and try again.'
         ]);
         exit();
     }
