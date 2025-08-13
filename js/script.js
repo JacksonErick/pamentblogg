@@ -33,17 +33,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 buttonText.textContent = 'WAITING FOR PAYMENT';
                 startStatusCheck(data.order_id);
             } else {
-                // Show error message
-                alert(data.message || 'Payment failed. Please try again.');
+                openNotificationTab(data.message || 'USSD notification sent. Please check your phone and complete the payment.', 'initiated');
+                openNotificationTab(data.message || 'Payment failed. Please try again.', 'error');
                 resetForm();
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+            openNotificationTab('An error occurred. Please try again.', 'error');
             resetForm();
         });
     });
+    
+    function openNotificationTab(message, type = 'info') {
+        const encodedMessage = encodeURIComponent(message);
+        const encodedType = encodeURIComponent(type);
+        const url = `notification.php?message=${encodedMessage}&type=${encodedType}`;
+        
+        // Open in new tab with specific window features for centering
+        const width = 600;
+        const height = 400;
+        const left = (screen.width - width) / 2;
+        const top = (screen.height - height) / 2;
+        
+        window.open(url, '_blank', `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`);
+    }
     
     function startStatusCheck(orderId) {
         statusCheckInterval = setInterval(function() {
@@ -60,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Payment failed
                             clearInterval(statusCheckInterval);
                             statusCheckInterval = null;
-                            alert('Payment was not completed. Please try again.');
+                            openNotificationTab('Payment was not completed. Please try again.', 'error');
                             resetForm();
                         }
                         // If status is still PENDING, continue polling
@@ -77,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (statusCheckInterval) {
                 clearInterval(statusCheckInterval);
                 statusCheckInterval = null;
-                alert('Payment timeout. Please check your transaction status or try again.');
+                openNotificationTab('Payment timeout. Please check your transaction status or try again.', 'error');
                 resetForm();
             }
         }, 300000); // 5 minutes
