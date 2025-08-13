@@ -59,18 +59,6 @@
         </div>
     </div>
 
-    <!-- Success Modal -->
-    <div id="successModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="success-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h2>PAYMENT DONE</h2>
-            <p>Your payment has been processed successfully!</p>
-            <button id="returnHome" class="btn-home">Return to Home</button>
-        </div>
-    </div>
-
     <script src="js/script.js"></script>
 </body>
 </html>
