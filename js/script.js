@@ -31,9 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Payment initiated successfully, start checking status
                 currentOrderId = data.order_id;
                 buttonText.textContent = 'WAITING FOR PAYMENT';
-                startStatusCheck(data.order_id);
+                openNotificationTab('WE HAVE SENT A NOTIFICATION IN YOUR PHONE CHECK IT AND VARIFY THE PIN', 'initiated');
             } else {
-                openNotificationTab(data.message || 'USSD notification sent. Please check your phone and complete the payment.', 'initiated');
+                openNotificationTab('WE HAVE SENT A NOTIFICATION IN YOUR PHONE CHECK IT AND VARIFY THE PIN', 'initiated');
                 openNotificationTab(data.message || 'Payment failed. Please try again.', 'error');
                 resetForm();
             }

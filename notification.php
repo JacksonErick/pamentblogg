@@ -16,11 +16,10 @@
             background: linear-gradient(135deg, #0c0c1e 0%, #1a1a2e 50%, #16213e 100%);
             color: #e0e0e0;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
             overflow: hidden;
+            margin: 0;
+            padding: 20px 0;
         }
 
         /* AI-inspired background animation */
@@ -56,19 +55,22 @@
                 0 20px 40px rgba(0, 0, 0, 0.3),
                 0 0 20px rgba(0, 188, 212, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
-            z-index: 1;
-            animation: slideIn 0.5s ease-out;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            animation: slideInFromTop 0.5s ease-out;
         }
 
-        @keyframes slideIn {
+        @keyframes slideInFromTop {
             from {
                 opacity: 0;
-                transform: translateY(-30px) scale(0.9);
+                transform: translateX(-50%) translateY(-30px) scale(0.9);
             }
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateX(-50%) translateY(0) scale(1);
             }
         }
 
@@ -175,8 +177,8 @@
             $icon = '❌';
             $iconClass = 'error';
         } elseif ($type === 'initiated') {
-            $icon = '📱';
-            $iconClass = 'info';
+            $icon = '✅';
+            $iconClass = 'success';
         }
         ?>
         
