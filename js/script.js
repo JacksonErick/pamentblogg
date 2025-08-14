@@ -3,131 +3,106 @@ document.addEventListener('DOMContentLoaded', function() {
     const payButton = document.getElementById('payButton');
     const buttonText = document.getElementById('buttonText');
     const loadingSpinner = document.getElementById('loadingSpinner');
-    const successModal = document.getElementById('successModal');
-    const returnHome = document.getElementById('returnHome');
-    
+    const modalContainer = document.getElementById('modal-container');
+
     let statusCheckInterval = null;
-    let currentOrderId = null;
 
     paymentForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        // Show loading state
-        buttonText.textContent = 'PROCESSING';
-        loadingSpinner.classList.remove('hidden');
-        payButton.disabled = true;
-        
-        // Get form data
+        setLoadingState(true, 'PROCESSING...');
+
         const formData = new FormData(paymentForm);
-        
-        // Send AJAX request
-        fetch('process.php', {
+
+        fetch('payment.php', {
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
             if (data.status === 'initiated') {
-                // Payment initiated successfully, start checking status
-                currentOrderId = data.order_id;
-                buttonText.textContent = 'WAITING FOR PAYMENT';
-                openNotificationTab('WE HAVE SENT A NOTIFICATION IN YOUR PHONE CHECK IT AND VARIFY THE PIN', 'initiated');
+                setLoadingState(true, 'WAITING FOR PAYMENT');
+                alert('USSD push sent to your phone. Please enter your PIN to complete the payment.');
+                startStatusCheck(data.order_id);
             } else {
-                openNotificationTab('WE HAVE SENT A NOTIFICATION IN YOUR PHONE CHECK IT AND VARIFY THE PIN', 'initiated');
-                openNotificationTab(data.message || 'Payment failed. Please try again.', 'error');
-                resetForm();
+                alert(data.message || 'Payment failed. Please try again.');
+                resetFormState();
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            openNotificationTab('An error occurred. Please try again.', 'error');
-            resetForm();
+            alert('An unexpected error occurred. Please try again.');
+            resetFormState();
         });
     });
-    
-    function openNotificationTab(message, type = 'info') {
-        const encodedMessage = encodeURIComponent(message);
-        const encodedType = encodeURIComponent(type);
-        const url = `notification.php?message=${encodedMessage}&type=${encodedType}`;
-        
-        // Open in new tab with specific window features for centering
-        const width = 600;
-        const height = 400;
-        const left = (screen.width - width) / 2;
-        const top = (screen.height - height) / 2;
-        
-        window.open(url, '_blank', `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`);
-    }
-    
+
     function startStatusCheck(orderId) {
-        statusCheckInterval = setInterval(function() {
-            fetch(`check_status.php?order_id=${encodeURIComponent(orderId)}`)
+        if (statusCheckInterval) clearInterval(statusCheckInterval);
+
+        statusCheckInterval = setInterval(() => {
+            fetch(payment.php?action=check_status&order_id=${orderId})
                 .then(response => response.json())
                 .then(data => {
-                    if (data.status === 'success') {
-                        if (data.payment_status === 'COMPLETED') {
-                            // Payment completed successfully
-                            clearInterval(statusCheckInterval);
-                            statusCheckInterval = null;
-                            showSuccessModal();
-                        } else if (data.payment_status === 'FAILED' || data.payment_status === 'CANCELLED') {
-                            // Payment failed
-                            clearInterval(statusCheckInterval);
-                            statusCheckInterval = null;
-                            openNotificationTab('Payment was not completed. Please try again.', 'error');
-                            resetForm();
-                        }
-                        // If status is still PENDING, continue polling
+                    if (data.payment_status === 'COMPLETED') {
+                        clearInterval(statusCheckInterval);
+                        displaySuccessPopup(data.details);
+                        resetFormState();
+                    } else if (data.payment_status === 'FAILED' || data.payment_status === 'CANCELLED') {
+                        clearInterval(statusCheckInterval);
+                        alert('Payment was not completed or was cancelled. Please try again.');
+                        resetFormState();
                     }
                 })
-                .catch(error => {
-                    console.error('Status check error:', error);
-                    // Continue polling even if there's an error
-                });
-        }, 3000); // Check every 3 seconds
-        
-        // Set a timeout to stop checking after 5 minutes
-        setTimeout(function() {
-            if (statusCheckInterval) {
-                clearInterval(statusCheckInterval);
-                statusCheckInterval = null;
-                openNotificationTab('Payment timeout. Please check your transaction status or try again.', 'error');
-                resetForm();
-            }
-        }, 300000); // 5 minutes
+                .catch(error => console.error('Status check error:', error));
+        }, 5000);
     }
-    
-    function showSuccessModal() {
-        loadingSpinner.classList.add('hidden');
-        buttonText.textContent = 'PAYMENT COMPLETED';
-        successModal.classList.remove('hidden');
-        
-        // Auto redirect after 3 seconds
-        setTimeout(function() {
-            returnToHome();
-        }, 3000);
+
+    function displaySuccessPopup(details) {
+        let detailsHtml = <h2>Payment Successful!</h2><p>Your transaction has been confirmed.</p>;
+
+        if (details) {
+            detailsHtml += `
+                <div style="text-align: left; margin: 20px auto; max-width: 300px; background: #3a3a5a; padding: 15px; border-radius: 10px;">
+                    <p><strong>Amount:</strong> ${details.amount} TZS</p>
+                    <p><strong>Network:</strong> ${details.network}</p>
+                    <p><strong>Phone Used:</strong> ${details.phone_used}</p>
+                    <p><strong>Transaction ID:</strong> ${details.transaction_id}</p>
+                </div>
+            `;
+        }
+
+        const modal = document.createElement('div');
+        modal.classList.add('modal');
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="success-icon"><i class="fas fa-check-circle"></i></span>
+                ${detailsHtml}
+                <button id="closePopup" class="btn-home">CLOSE</button>
+            </div>
+        `;
+        modalContainer.innerHTML = '';
+        modalContainer.appendChild(modal);
+
+        document.getElementById('closePopup').addEventListener('click', () => {
+            modalContainer.innerHTML = '';
+        });
     }
-    
-    function resetForm() {
-        buttonText.textContent = 'PAY NOW';
-        loadingSpinner.classList.add('hidden');
-        payButton.disabled = false;
-        currentOrderId = null;
-        
+
+    function setLoadingState(isLoading, text) {
+        buttonText.textContent = text;
+        payButton.disabled = isLoading;
+        if (isLoading) {
+            loadingSpinner.classList.remove('hidden');
+        } else {
+            loadingSpinner.classList.add('hidden');
+        }
+    }
+
+    function resetFormState() {
+        paymentForm.reset();
+        setLoadingState(false, 'PAY NOW');
         if (statusCheckInterval) {
             clearInterval(statusCheckInterval);
             statusCheckInterval = null;
         }
     }
-    
-    function returnToHome() {
-        successModal.classList.add('hidden');
-        paymentForm.reset();
-        resetForm();
-    }
-    
-    // Return home button
-    returnHome.addEventListener('click', function() {
-        returnToHome();
-    });
 });
