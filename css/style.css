@@ -1,5 +1,4 @@
-/* Reset and base styles */
-* {
+{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -15,7 +14,6 @@ body {
     overflow-x: hidden;
 }
 
-/* AI-inspired background animation */
 body::before {
     content: '';
     position: fixed;
@@ -66,7 +64,6 @@ header p {
     text-shadow: 0 0 10px rgba(158, 158, 158, 0.3);
 }
 
-/* Payment form styles */
 .payment-form {
     background: rgba(42, 42, 74, 0.95);
     backdrop-filter: blur(20px);
@@ -78,12 +75,6 @@ header p {
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(0, 188, 212, 0.3);
     position: relative;
-    animation: formGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes formGlow {
-    0% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 188, 212, 0.1); }
-    100% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 188, 212, 0.2); }
 }
 
 .form-group {
@@ -138,7 +129,6 @@ small {
     font-size: 12px;
 }
 
-/* Button styles */
 .btn-pay {
     width: 100%;
     padding: 18px;
@@ -160,21 +150,6 @@ small {
     overflow: hidden;
 }
 
-.btn-pay::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-}
-
-.btn-pay:hover::before {
-    left: 100%;
-}
-
 .btn-pay:hover {
     background: linear-gradient(45deg, #0097a7, #00838f);
     transform: translateY(-2px);
@@ -188,7 +163,6 @@ small {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Loading spinner */
 .spinner {
     width: 24px;
     height: 24px;
@@ -216,11 +190,8 @@ small {
 @keyframes sk-bounce {
     0%, 100% { 
         transform: scale(0.0);
-        opacity: 1;
-    }
-    50% { 
+    } 50% { 
         transform: scale(1.0);
-        opacity: 0.7;
     }
 }
 
@@ -228,7 +199,6 @@ small {
     display: none;
 }
 
-/* Success modal */
 .modal {
     position: fixed;
     top: 0;
@@ -282,16 +252,6 @@ small {
     text-shadow: 0 0 30px rgba(0, 230, 118, 0.5);
 }
 
-.success-icon i {
-    animation: successPulse 1s ease-out;
-}
-
-@keyframes successPulse {
-    0% { transform: scale(0); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
 .modal-content h2 {
     color: #00e676;
     margin-bottom: 15px;
@@ -322,46 +282,4 @@ small {
     background: linear-gradient(45deg, #00c853, #00a152);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 230, 118, 0.4);
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-    .container {
-        padding: 15px;
-    }
-    
-    .payment-form {
-        padding: 25px;
-    }
-    
-    header h1 {
-        font-size: 28px;
-    }
-    
-    input, select {
-        padding: 12px 15px;
-    }
-    
-    .btn-pay {
-        padding: 15px;
-        font-size: 16px;
-    }
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(42, 42, 74, 0.3);
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(0, 188, 212, 0.5);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 188, 212, 0.7);
 }
