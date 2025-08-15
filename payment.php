@@ -100,3 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 http_response_code(400);
 echo json_encode(['status' => 'error', 'message' => 'Invalid Request']);
 ?>
+
+
+http_response_code(400);
+echo json_encode(['status' => 'error', 'message' => 'Invalid Request']);
+?>
