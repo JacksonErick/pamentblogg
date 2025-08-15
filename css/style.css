@@ -1,4 +1,4 @@
-{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -278,6 +278,11 @@ small {
     box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3);
 }
 
+.btn-home:hover {
+    background: linear-gradient(45deg, #00c853, #00a152);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 230, 118, 0.4);
+}
 .btn-home:hover {
     background: linear-gradient(45deg, #00c853, #00a152);
     transform: translateY(-2px);
