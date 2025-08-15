@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (statusCheckInterval) clearInterval(statusCheckInterval);
 
         statusCheckInterval = setInterval(() => {
-            fetch(payment.php?action=check_status&order_id=${orderId})
+            fetch(`payment.php?action=check_status&order_id=${orderId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.payment_status === 'COMPLETED') {
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displaySuccessPopup(details) {
-        let detailsHtml = <h2>Payment Successful!</h2><p>Your transaction has been confirmed.</p>;
+        let detailsHtml = `<h2>Payment Successful!</h2><p>Your transaction has been confirmed.</p>`;
 
         if (details) {
             detailsHtml += `
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p><strong>Transaction ID:</strong> ${details.transaction_id}</p>
                 </div>`;
         }
-
+        
         const modalHtml = `
             <div class="modal">
                 <div class="modal-content">
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button id="closePopup" class="btn-home">CLOSE</button>
                 </div>
             </div>`;
-
+        
         modalContainer.innerHTML = modalHtml;
         document.getElementById('closePopup').addEventListener('click', () => {
             hideModal();
@@ -129,7 +129,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
-            statusCheckInterval = null;
-        }
-    }
-});
+
