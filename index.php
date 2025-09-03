@@ -22,8 +22,6 @@
                     <select id="category" name="category" required>
                         <option value="">Select a category</option>
                         <option value="NORMAL PAY">NORMAL PAY</option>
-                        <option value="DROPSHIPING">DROPSHIPING</option>
-                        <option value="FOREX SIGNALS">FOREX SIGNALS</option>
                     </select>
                 </div>
                 
